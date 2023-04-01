@@ -1,0 +1,40 @@
+services:
+  mysql:
+    image: mysql:5.7
+    container_name: db
+    # Database doesn't currently need to persist between uses
+    # volumes:
+    #  - :/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: test
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+  node-api:
+    build: ./backend
+    container_name: node-api
+    ports:
+      - "3080:3080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    # Dev mode: include volumes
+    volumes:
+      - ./backend:/usr/src/app
+  node-ui:
+    build: ./react-frontend
+    container_name: node-ui
+    ports:
+      - "3000:3000"
+    depends_on:
+      node-api:
+        condition: service_started
+    stdin_open: true
+    tty: true
+    # Dev mode: include volumes
+    volumes:
+      - ./react-frontend:/usr/src/app
+    # Make sure react app restarts after changes in code
+    environment:
+      CHOKIDAR_USEPOLLING: 'true'
