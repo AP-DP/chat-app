@@ -1,9 +1,24 @@
+const { createMessageTable } = require('./dbMessages')
+
+// Table names
+const CHANNEL_IDS = "channel_ids";
+
 /**
  * Initialisation sequence for a channel table
  * @param {Object} dbConnection: connection for database 
  */
 function createChannelTable(dbConnection) {
-
+    dbConnection.query(`CREATE TABLE ${CHANNEL_IDS} ( 
+        id int unsigned NOT NULL auto_increment,
+        name varchar(254) NOT NULL,
+        PRIMARY KEY (id))`, 
+        (err, results) => {
+            if (err) {
+                console.log("Could not create table within db");
+                return("Error: table not created")
+            }
+        }
+    );
 }
 
 /**
@@ -11,7 +26,14 @@ function createChannelTable(dbConnection) {
  * @param {String} channelName
  */
 function addChannel(channelName) {
-
+    // Check if channel name already exists, modifiy if needed
+    
+    // Insert
+    dbConnection.query(`INSERT INTO ${CHANNEL_IDS} (name) VALUES
+    ('${channelName}')`);
+    let latestID = dbConnection.query(`SELECT LAST_INSERT_ID()`);
+    // Create message table for new channel
+    createMessageTable(latestID);
 }
 
 /**
