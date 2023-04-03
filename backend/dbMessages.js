@@ -67,4 +67,13 @@ function deleteMessage(messageID) {
 
 }
 
-module.exports = { createMessageTable, addMessage, findInMessages, findByAuthor, findAllReplies, deleteMessage }
+/**
+ * Remove message table
+ * @param {String} channelID 
+ */
+function deleteMessageTable(channelID) {
+    // DROP TABLE table_name;
+    dbConnection.query(`DROP TABLE ${MESSAGE_IDS}_${channelID}`);
+}
+
+module.exports = { createMessageTable, addMessage, findInMessages, findByAuthor, findAllReplies, deleteMessage, deleteMessageTable }
