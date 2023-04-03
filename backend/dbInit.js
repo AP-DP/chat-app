@@ -1,4 +1,6 @@
 const { createUserTables } = require('./dbUsers')
+const { createChannelTable, addChannel, getChannelID } = require('./dbChannels')
+const { addMessage } = require('./dbMessages')
 
 module.exports = () => {
     // Establish connection
@@ -24,8 +26,10 @@ module.exports = () => {
                 // Create table for users
                 createUserTables(dbConnection);
                 // Create first channel
-
+                createChannelTable(dbConnection);
+                addChannel("Welcome");
                 // Create first message
+                addMessage(getChannelID("Welcome"), "", "", "admin", Date.now());
             });
         }
         // DB already set up
