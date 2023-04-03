@@ -1,4 +1,4 @@
-const { createMessageTable } = require('./dbMessages')
+const { createMessageTable, deleteMessageTable } = require('./dbMessages')
 
 // Table names
 const CHANNEL_IDS = "channel_ids";
@@ -27,7 +27,7 @@ function createChannelTable(dbConnection) {
  */
 function addChannel(channelName) {
     // Check if channel name already exists, modifiy if needed
-    
+
     // Insert
     dbConnection.query(`INSERT INTO ${CHANNEL_IDS} (name) VALUES
     ('${channelName}')`);
@@ -41,7 +41,15 @@ function addChannel(channelName) {
  * @param {String} channelName 
  */
 function getChannelID(channelName) {
-
+    dbConnection.query(`SELECT * from ${CHANNEL_IDS} WHERE name = ${channelName}`, (err, results) => {
+        if (err) {
+            console.log("Cannot find id for channel: " + channelName);
+            return(-1);
+        }
+        else {
+            return(results);
+        }
+    });
 }
 
 /**
@@ -51,6 +59,8 @@ function getChannelID(channelName) {
 function deleteChannelByID(channelID) {
     // Delete content
     deleteChannelMessages(channelID)
+    // Delete channel
+    `DELETE FROM ${CHANNEL_IDS} WHERE id=${channelID};`
 }
 
 /**
@@ -59,7 +69,7 @@ function deleteChannelByID(channelID) {
  * @param {String} channelID 
  */
 function deleteChannelMessages(channelID) {
-
+    deleteMessageTable(channelID);
 }
 
 module.exports = { createChannelTable, addChannel, getChannelID, deleteChannelByID }
