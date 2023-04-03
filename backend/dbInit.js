@@ -22,7 +22,7 @@ module.exports = () => {
                     res.send('Retry');
                 }
                 // Create table for users
-                
+                createUserTables(dbConnection);
                 // Create first channel
 
                 // Create first message
