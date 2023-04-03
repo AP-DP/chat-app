@@ -1,10 +1,26 @@
+// Table names
+const MESSAGE_IDS = "message_ids";
+
 /**
  * Initialisation a message table for new channel
  * @param {Object} dbConnection: connection for database 
  * @param {String} channelID: channel the messages belongs to
  */
 function createMessageTable(dbConnection, channelID) {
-
+    dbConnection.query(`CREATE TABLE ${MESSAGE_IDS}_${channelID} ( 
+        id int unsigned NOT NULL auto_increment,
+        root int unsigned NOT NULL,
+        parent int unsigned NOT NULL,
+        author varchar(254) NOT NULL,
+        timestamp varchar(254) NOT NULL,
+        PRIMARY KEY (id))`, 
+        (err, results) => {
+            if (err) {
+                console.log("Could not create table within db");
+                return("Error: table not created")
+            }
+        }
+    );
 }
 
 /**
