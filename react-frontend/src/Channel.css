@@ -1,0 +1,6 @@
+.channel {
+    width: 100%;
+    background-color: darkslategray;
+    display: inline-block;
+    font-size: 12px;
+}
