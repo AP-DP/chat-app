@@ -30,6 +30,7 @@ module.exports = () => {
                 addChannel("Welcome");
                 // Create first message
                 addMessage(getChannelID("Welcome"), "", "", "admin", Date.now());
+                return dbConnection;
             });
         }
         // DB already set up
