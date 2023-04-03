@@ -1,17 +1,27 @@
 // Load packages
 const crypto = require("crypto");
 
+// Connection
+let dbConnection;
+
 // Table names
 const USER_IDS = "user_ids";
 const USER_EMAILS = "user_emails";
 const USER_PWDS = "user_pwds";
 const USER_DATA = "user_data";
 
+// Pwd variables
+const initVector = crypto.randomBytes(16);
+const Securitykey = crypto.randomBytes(32);
+const cipher = crypto.createCipheriv("sha256", Securitykey, initVector);
+const decipher = crypto.createDecipheriv("sha256", Securitykey, initVector);
+
 /**
  * Initialisation sequence for a user tables
- * @param {Object} dbConnection: connection for database 
+ * @param {Object} connection: connection for database 
  */
-function createUserTables(dbConnection) {
+function createUserTables(connection) {
+    dbConnection = connection;
     // UID Table
     dbConnection.query(`CREATE TABLE ${USER_IDS} ( 
         id int unsigned NOT NULL auto_increment,
@@ -21,10 +31,6 @@ function createUserTables(dbConnection) {
             if (err) {
                 console.log("Could not create table within db:");
                 return("Error: table not created")
-            }
-            // Table created
-            else {
-                
             }
         }
     );
@@ -38,25 +44,17 @@ function createUserTables(dbConnection) {
                 console.log("Could not create table within db:");
                 return("Error: table not created")
             }
-            // Table created
-            else {
-                
-            }
         }
     );
     // Password Table
     dbConnection.query(`CREATE TABLE ${USER_PWDS} ( 
         id varchar(36) NOT NULL,
-        pwd varchar(254) NOT NULL,
+        pwd varchar(64) NOT NULL,
         PRIMARY KEY (id))`, 
         (err, results) => {
             if (err) {
                 console.log("Could not create table within db:");
                 return("Error: table not created")
-            }
-            // Table created
-            else {
-                
             }
         }
     );
@@ -71,10 +69,6 @@ function createUserTables(dbConnection) {
                 console.log("Could not create table within db:");
                 return("Error: table not created")
             }
-            // Table created
-            else {
-                
-            }
         }
     );
 }
@@ -85,7 +79,28 @@ function createUserTables(dbConnection) {
  * @param {String} password 
  */
 function addUser(email, password) {
-
+    let getUID = new Promise((resolve, reject) => {
+        dbConnection.query(`SELECT UUID()`),
+        (err, results) => {
+            if (err) {
+                console.log("Failed to generate UUID")
+            }
+            // Else use uuid
+            results.json().then((uid) => {
+                // Record id
+                dbConnection.query(`INSERT INTO ${USER_IDS} (uid) VALUES (UUID())`);
+                resolve(uid)
+            });
+        }
+    })
+    getUID.then((uid) => {
+        // Record email
+        dbConnection.query(`INSERT INTO ${USER_EMAILS} (id, email) VALUES
+        ('${uid}', '${email}')`);
+        // Record password
+        dbConnection.query(`INSERT INTO ${USER_PWDS} (id, pwd) VALUES
+        ('${uid}', '${encodePassword(password)}')`);
+    })
 }
 
 /**
@@ -94,7 +109,14 @@ function addUser(email, password) {
  * @param {String} password 
  */
 function verifyUser(email, password) {
-
+    let id = getUserID(email);
+    if (id != -1) {
+        let recordedPwd = getPassword(id);
+        if (recordedPwd != -1) {
+            return (recordedPwd == password);
+        }
+    }
+    return false;
 }
 
 /**
@@ -102,7 +124,15 @@ function verifyUser(email, password) {
  * @param {String} email 
  */
 function getUserID(email) {
-    
+    dbConnection.query(`SELECT * from ${USER_EMAILS} WHERE email = ${email}`, (err, results) => {
+        if (err) {
+            console.log("Cannot find id for email: " + email);
+            return(-1);
+        }
+        else {
+            return(results);
+        }
+    });
 }
 
 /**
@@ -110,7 +140,8 @@ function getUserID(email) {
  * @param {String} pwd 
  */
 function encodePassword(pwd) {
-
+    let encryptedData = cipher.update(pwd, "utf-8", "hex");
+    return encryptedData;
 }
 
 /**
@@ -119,9 +150,18 @@ function encodePassword(pwd) {
  */
 function getPassword(id) {
     // Retrieve
-
-    // Decipher
-
+    dbConnection.query(`SELECT * from ${USER_PWDS} WHERE id = ${id}`, (err, results) => {
+        if (err) {
+            console.log("Cannot find password for id: " + id);
+            return(-1);
+        }
+        else {
+            // Decipher
+            console.log("PWD Results: " + results);
+            let decryptedData = decipher.update(results, "hex", "utf-8");
+            return(decryptedData);
+        }
+    });
 }
 
 /**
