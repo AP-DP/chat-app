@@ -4,7 +4,7 @@ import './App.css';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
-import { getDB } from './services/DataService';
+import { getDB, getChannels } from './services/DataService';
 import { verifyUser, addUser } from './services/UserService';
 
 import { Login } from './Login';
@@ -15,6 +15,7 @@ import { ChannelPreview } from './ChannelPreview';
 // Icons
 import {library} from '@fortawesome/fontawesome-svg-core';
 import * as Icons from '@fortawesome/free-solid-svg-icons';
+import { ShowChannels } from './ShowChannels';
 
 const iconList = Object.keys(Icons)
   .filter((key) => key !== 'fas' && key !== 'prefix')
@@ -26,6 +27,7 @@ function App() {
 
   // getDB();
 
+  // Check for logged in user
   const [getUser, setUser] = useState(false);
 
   useEffect(() => {
@@ -36,9 +38,12 @@ function App() {
     }
   }, []);
 
-  if (!getUser) {
-    return <Login verifyUser={verifyUser} createUser={addUser} setUser={setUser}/>
-  }
+  // Gather channels for display
+  const [getChannels, setChannels] = useState([{name: "Test 1", link: "/"}, {name: "Test 2", link: "/"}]);
+
+  // if (!getUser) {
+  //   return <Login verifyUser={verifyUser} createUser={addUser} setUser={setUser}/>
+  // }
 
   return (
     <div className="App">
@@ -49,7 +54,7 @@ function App() {
             <Link to="/channelTest">  <button onClick={() => console.log("Channel Test")}> Show Channel X </button> </Link>
             <Routes>
               {/* <Route exact path='/' element={<Landing/>} /> */}
-              <Route exact path='/' element={<ChannelPreview channelName={"A"} channelLink={"/"}/>} />
+              <Route exact path='/' element={<ShowChannels channels={getChannels}/>} />
               <Route path="/channelTest" element={<Channel name={"test"}/>} />
             </Routes>
           </Router>
