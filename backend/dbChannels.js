@@ -1,5 +1,8 @@
 const { createMessageTable, deleteMessageTable } = require('./dbMessages')
 
+// Connection
+let dbConnection;
+
 // Table names
 const CHANNEL_IDS = "channel_ids";
 
@@ -7,7 +10,8 @@ const CHANNEL_IDS = "channel_ids";
  * Initialisation sequence for a channel table
  * @param {Object} dbConnection: connection for database 
  */
-function createChannelTable(dbConnection) {
+function createChannelTable(connection) {
+    dbConnection = connection;
     dbConnection.query(`CREATE TABLE ${CHANNEL_IDS} ( 
         id int unsigned NOT NULL auto_increment,
         name varchar(254) NOT NULL,
@@ -33,7 +37,7 @@ function addChannel(channelName) {
     ('${channelName}')`);
     let latestID = dbConnection.query(`SELECT LAST_INSERT_ID()`);
     // Create message table for new channel
-    createMessageTable(latestID);
+    createMessageTable(dbConnection, latestID);
 }
 
 /**

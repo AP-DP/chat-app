@@ -1,3 +1,6 @@
+// Connection
+let dbConnection;
+
 // Table names
 const MESSAGE_IDS = "message_ids";
 
@@ -6,7 +9,8 @@ const MESSAGE_IDS = "message_ids";
  * @param {Object} dbConnection: connection for database 
  * @param {String} channelID: channel the messages belongs to
  */
-function createMessageTable(dbConnection, channelID) {
+function createMessageTable(connection, channelID) {
+    dbConnection = connection;
     dbConnection.query(`CREATE TABLE ${MESSAGE_IDS}_${channelID} ( 
         id int unsigned NOT NULL auto_increment,
         root int unsigned NOT NULL,
@@ -32,7 +36,8 @@ function createMessageTable(dbConnection, channelID) {
  * @param {String} timestamp: time the message was submitted by the user
  */
 function addMessage(channel, root, parent, author, timestamp) {
-
+    dbConnection.query(`INSERT INTO $${MESSAGE_IDS}_${channel} (root, parent, author, timestamp) VALUES
+    ('${root}', '${parent}', '${author}', '${timestamp}')`);
 }
 
 /**
