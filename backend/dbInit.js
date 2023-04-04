@@ -1,37 +1,45 @@
+const mysql = require('mysql');
+
 const { createUserTables } = require('./dbUsers')
 const { createChannelTable, addChannel, getChannelID } = require('./dbChannels')
 const { addMessage } = require('./dbMessages')
 
-module.exports = () => {
-    // Establish connection
-    let dbConnection = mysql.createConnection({
-        host: 'db',
-        user: 'root',
-        password: 'test'
-    });
+let dbConnection;
+let dbName = "channelchatdb";
+
+/**
+ * Return connection if already made, else create it
+ * @returns dbConnection: connection for mysql
+ */
+function getConnection() {
+    if (!dbConnection) {
+        // Create connection
+        console.log("Making connection");
+        // Establish connection
+        dbConnection = mysql.createConnection({
+            host: 'db',
+            user: 'root',
+            password: 'test'
+        });
+        console.log("Made connection: " + dbConnection);
+        return getDB();
+    }
+    else {
+        return dbConnection;
+    }
+}
+
+/**
+ * Get main db if it exists, else create it
+ */
+function getDB() {
     // Check if db exists
-    dbConnection.query(`USE channelchatdb`,
+    dbConnection.query(`USE ${dbName}`,
     (err, results) => {
         // If db doesn't exist, create one
         if (err) {
             console.log("creating db");
-            dbConnection.query(`CREATE DATABASE channelchatdb`,
-            (err, results) => {
-                if (err) {
-                    console.log("Could not create database:");
-                    console.log(err);
-                    res.status(404);
-                    res.send('Retry');
-                }
-                // Create table for users
-                createUserTables(dbConnection);
-                // Create first channel
-                createChannelTable(dbConnection);
-                addChannel("Welcome");
-                // Create first message
-                addMessage(getChannelID("Welcome"), "", "", "admin", Date.now());
-                return dbConnection;
-            });
+            return createDB();
         }
         // DB already set up
         else {
@@ -40,3 +48,53 @@ module.exports = () => {
         }
     });
 }
+
+/**
+ * Promise based function to create new db
+ */
+function createDB() {
+    let newDB = new Promise((resolve, reject) => {
+        dbConnection.query(`CREATE DATABASE ${dbName}`,
+        (err, results) => {
+            if (err) {
+                console.log("Could not create database:");
+                console.log(err);
+                reject("Error");
+            }
+            else {
+                dbConnection.query(`USE ${dbName}`,
+                (err, results) => {
+                    if (!err) {
+                        resolve("Done");
+                    }
+                    else {
+                        console.log("Could not select database.");
+                        reject();
+                    }
+                });
+            }
+        });
+    })
+    newDB.then(() => {
+        // Add tables
+        return addTables();
+    });
+}
+
+/**
+ * Promise based function to add tables to new db
+ */
+function addTables() {
+    let newTables = new Promise((resolve, reject) => {
+        // Create table for users
+        createUserTables(dbConnection);
+        // Create table for channels
+        createChannelTable(dbConnection);
+        resolve("Done");
+    })
+    newTables.then(() => {
+        return dbConnection;
+    });  
+}
+
+module.exports = { getConnection }
