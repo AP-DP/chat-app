@@ -1,5 +1,6 @@
 // Load packages
 const crypto = require("crypto");
+const { checkConnection } = require('./dbInit')
 
 // Connection
 let dbConnection;
@@ -86,6 +87,7 @@ function createUserTables(connection) {
  * @param {String} password 
  */
 function addUser(email, password) {
+    dbConnection = checkConnection(dbConnection);
     let getUID = new Promise((resolve, reject) => {
         dbConnection.query(`SELECT UUID()`),
         (err, results) => {
@@ -107,6 +109,10 @@ function addUser(email, password) {
         // Record password
         dbConnection.query(`INSERT INTO ${USER_PWDS} (id, pwd) VALUES
         ('${uid}', '${encodePassword(password)}')`);
+        // Send uid
+        return JSON.stringify({
+            userID: uid
+        })
     })
 }
 
@@ -116,6 +122,7 @@ function addUser(email, password) {
  * @param {String} password 
  */
 function verifyUser(email, password) {
+    dbConnection = checkConnection(dbConnection);
     let id = getUserID(email);
     if (id != -1) {
         let recordedPwd = getPassword(id);
@@ -156,6 +163,7 @@ function encodePassword(pwd) {
  * @param {String} id 
  */
 function getPassword(id) {
+    dbConnection = checkConnection(dbConnection);
     // Retrieve
     dbConnection.query(`SELECT * from ${USER_PWDS} WHERE id = ${id}`, (err, results) => {
         if (err) {

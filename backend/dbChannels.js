@@ -1,3 +1,4 @@
+const { checkConnection } = require('./dbInit')
 const { createMessageTable, deleteMessageTable } = require('./dbMessages')
 
 // Connection
@@ -30,6 +31,7 @@ function createChannelTable(connection) {
  * @param {String} channelName
  */
 function addChannel(channelName) {
+    dbConnection = checkConnection(dbConnection);
     // Check if channel name already exists, modifiy if needed
 
     // Insert
@@ -45,6 +47,7 @@ function addChannel(channelName) {
  * @param {String} channelName 
  */
 function getChannelID(channelName) {
+    dbConnection = checkConnection(dbConnection);
     dbConnection.query(`SELECT * from ${CHANNEL_IDS} WHERE name = ${channelName}`, (err, results) => {
         if (err) {
             console.log("Cannot find id for channel: " + channelName);

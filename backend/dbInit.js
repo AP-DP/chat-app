@@ -30,6 +30,20 @@ function getConnection() {
 }
 
 /**
+ * For other db files: check if connection exists
+ * and if not, grab connnection from this page.
+ * @param {Object} connection 
+ */
+function checkConnection(connection) {
+    if (!connection) {
+        getConnection();
+    }
+    else {
+        return connection;
+    }
+}
+
+/**
  * Get main db if it exists, else create it
  */
 function getDB() {
@@ -97,4 +111,4 @@ function addTables() {
     });  
 }
 
-module.exports = { getConnection }
+module.exports = { getConnection, checkConnection }
