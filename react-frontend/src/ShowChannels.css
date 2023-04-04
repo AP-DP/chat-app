@@ -1,0 +1,7 @@
+.channels-container {
+    display: flex;
+}
+
+.channel-box {
+    padding: 10px;
+}
