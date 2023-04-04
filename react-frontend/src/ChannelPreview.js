@@ -13,6 +13,13 @@ export const ChannelPreview = ({channelName, channelLink}) => {
         icon = `fa-solid fa-${channelName[0].toLowerCase()}`
     }
     return (
-        <button className="channel-button"><FontAwesomeIcon icon={icon} /></button>
+        <div className='preview-container'>
+            <div>
+                <button className='channel-button'><FontAwesomeIcon className='channel-icon' icon={icon} /></button>
+            </div>
+            <div>
+                <label className='channel-label'>{channelName}</label>
+            </div>
+        </div>
     );
 }
