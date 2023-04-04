@@ -13,4 +13,14 @@ const getDB = () => fetch(`${backendURL}/init`, {
 //   });
 });
 
-module.exports = { getDB }
+/**
+ * Find all channels
+ * @returns All channel IDs
+ */
+const getChannels = () => fetch(`${backendURL}/init`, {
+    method: 'GET'
+}).then((response) => {
+    console.log("channels: " + response);
+});
+
+module.exports = { getDB, getChannels }
