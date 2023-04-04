@@ -23,6 +23,23 @@ const iconList = Object.keys(Icons)
 library.add(...iconList);
 
 function App() {
+
+  // getDB();
+
+  const [getUser, setUser] = useState(false);
+
+  useEffect(() => {
+    const loggedInUser = localStorage.getItem("channelChatUser");
+    if (loggedInUser) {
+      const foundUser = loggedInUser;
+      setUser(foundUser);
+    }
+  }, []);
+
+  if (!getUser) {
+    return <Login verifyUser={verifyUser} createUser={addUser} setUser={setUser}/>
+  }
+
   return (
     <div className="App">
       <header className="App-header">
