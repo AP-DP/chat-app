@@ -43,6 +43,22 @@ function addChannel(channelName) {
 }
 
 /**
+ * Get all channel ids and names
+ */
+function getChannels() {
+    dbConnection = checkConnection(dbConnection);
+    dbConnection.query(`SELECT * from ${CHANNEL_IDS}`, (err, results) => {
+        if (err) {
+            console.log("Cannot get channels from table");
+            return(-1);
+        }
+        else {
+            return(results);
+        }
+    });
+}
+
+/**
  * Find id
  * @param {String} channelName 
  */
@@ -79,4 +95,4 @@ function deleteChannelMessages(channelID) {
     deleteMessageTable(channelID);
 }
 
-module.exports = { createChannelTable, addChannel, getChannelID, deleteChannelByID }
+module.exports = { createChannelTable, getChannels, addChannel, getChannelID, deleteChannelByID }
