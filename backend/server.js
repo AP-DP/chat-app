@@ -1,8 +1,7 @@
 'use strict';
 
 // Load packages
-const express = require('express');
-const mysql = require('mysql');
+const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors');
 
@@ -22,8 +21,11 @@ const PORT = 3080;
 const HOST = '0.0.0.0';
 
 // Database variables
-let dbConnection = require('./dbInit')
+const { getConnection } = require('./dbInit')
 const { addUser, verifyUser, getUserID, getUserData } = require('./dbUsers')
+
+// Set up connection
+let dbConnection = getConnection();
 
 // Routes
 
@@ -33,6 +35,7 @@ const { addUser, verifyUser, getUserID, getUserData } = require('./dbUsers')
 app.route('/init')
     .post((req, res, next) => {
         console.log("db check");
+        console.log(dbConnection);
     })
 
 /**
