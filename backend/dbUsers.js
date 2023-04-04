@@ -12,9 +12,10 @@ const USER_DATA = "user_data";
 
 // Pwd variables
 const initVector = crypto.randomBytes(16);
-const Securitykey = crypto.randomBytes(32);
-const cipher = crypto.createCipheriv("sha256", Securitykey, initVector);
-const decipher = crypto.createDecipheriv("sha256", Securitykey, initVector);
+const securitykey = crypto.randomBytes(32);
+const algorithm = 'aes-256-cbc';
+const cipher = crypto.createCipheriv(algorithm, securitykey, initVector);
+const decipher = crypto.createDecipheriv(algorithm, securitykey, initVector);
 
 /**
  * Initialisation sequence for a user tables
@@ -29,45 +30,51 @@ function createUserTables(connection) {
         PRIMARY KEY (id))`, 
         (err, results) => {
             if (err) {
-                console.log("Could not create table within db:");
+                console.log("Could not create table within db: " + USER_IDS);
                 return("Error: table not created")
             }
-        }
-    );
-    // Email Table
-    dbConnection.query(`CREATE TABLE ${USER_EMAILS} ( 
-        id varchar(36) NOT NULL,
-        email varchar(254) NOT NULL,
-        PRIMARY KEY (id))`, 
-        (err, results) => {
-            if (err) {
-                console.log("Could not create table within db:");
-                return("Error: table not created")
-            }
-        }
-    );
-    // Password Table
-    dbConnection.query(`CREATE TABLE ${USER_PWDS} ( 
-        id varchar(36) NOT NULL,
-        pwd varchar(64) NOT NULL,
-        PRIMARY KEY (id))`, 
-        (err, results) => {
-            if (err) {
-                console.log("Could not create table within db:");
-                return("Error: table not created")
-            }
-        }
-    );
-    // User Data Table
-    dbConnection.query(`CREATE TABLE ${USER_DATA} ( 
-        id varchar(36) NOT NULL,
-        name varchar(254) NOT NULL,
-        ranking int signed NOT NULL,
-        PRIMARY KEY (id))`, 
-        (err, results) => {
-            if (err) {
-                console.log("Could not create table within db:");
-                return("Error: table not created")
+            else {
+                // Email Table
+                dbConnection.query(`CREATE TABLE ${USER_EMAILS} ( 
+                    id varchar(36) NOT NULL,
+                    email varchar(254) NOT NULL,
+                    PRIMARY KEY (id))`, 
+                    (err, results) => {
+                        if (err) {
+                            console.log("Could not create table within db: " + USER_EMAILS);
+                            return("Error: table not created")
+                        }
+                        else {
+                            // Password Table
+                            dbConnection.query(`CREATE TABLE ${USER_PWDS} ( 
+                                id varchar(36) NOT NULL,
+                                pwd varchar(64) NOT NULL,
+                                PRIMARY KEY (id))`, 
+                                (err, results) => {
+                                    if (err) {
+                                        console.log("Could not create table within db: " + USER_PWDS);
+                                        return("Error: table not created")
+                                    }
+                                    else {
+                                        // User Data Table
+                                        dbConnection.query(`CREATE TABLE ${USER_DATA} ( 
+                                            id varchar(36) NOT NULL,
+                                            name varchar(254) NOT NULL,
+                                            ranking int signed NOT NULL,
+                                            PRIMARY KEY (id))`, 
+                                            (err, results) => {
+                                                if (err) {
+                                                    console.log("Could not create table within db: " + USER_DATA);
+                                                    return("Error: table not created")
+                                                }
+                                            }
+                                        );
+                                    }
+                                }
+                            );
+                        }
+                    }
+                );
             }
         }
     );
@@ -136,7 +143,7 @@ function getUserID(email) {
 }
 
 /**
- * Use SHA-256 to encrypt password
+ * Use AES-256 to encrypt password
  * @param {String} pwd 
  */
 function encodePassword(pwd) {
