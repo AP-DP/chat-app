@@ -21,39 +21,40 @@ export const Login = ({verifyUser, createUser, setUser}) => {
         }
         else {
             // Send data to be checked by db
-            let validUser = verifyUser(email, pwd);
-            let proceed = false;
-            if (firstTimeUser) {
-                if (validUser) {
-                    // Not actually a first time user
-                    alert("This account already exists, please log in instead.");
+            verifyUser(email, pwd).then((validUser) => {
+                let proceed = false;
+                if (firstTimeUser) {
+                    if (validUser) {
+                        // Not actually a first time user
+                        alert("This account already exists, please log in instead.");
+                    }
+                    else {
+                        createUser(email, pwd);
+                        proceed = true;
+                    }
                 }
+                // Logging in
                 else {
-                    createUser(email, pwd);
-                    proceed = true;
+                    if (validUser) {
+                        proceed = true;
+                    }
+                    else {
+                        alert("Please try again: login credentials not recognized.");
+                    }
                 }
-            }
-            // Logging in
-            else {
-                if (validUser) {
-                    proceed = true;
+                if (proceed) {
+                    // Use local storage or local session to store credentials
+                    if (isChecked) {
+                        // Keep user logged in
+                        localStorage.setItem('channelChatUser', true)
+                    }
+                    else {
+                        // Only keep logged in for session
+                        sessionStorage.setItem('channelChatUser', true);
+                    }
+                    setUser(true);
                 }
-                else {
-                    alert("Please try again: login credentials not recognized.");
-                }
-            }
-            if (proceed) {
-                // Use local storage or local session to store credentials
-                if (isChecked) {
-                    // Keep user logged in
-                    localStorage.setItem('channelChatUser', true)
-                }
-                else {
-                    // Only keep logged in for session
-                    sessionStorage.setItem('channelChatUser', true);
-                }
-                setUser(true);
-            }
+            });
         }
     }
     
