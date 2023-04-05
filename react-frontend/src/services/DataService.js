@@ -2,25 +2,29 @@
 const backendURL = "http://localhost:3080";
 
 // Initialise db or clear current posts
-const getDB = () => fetch(`${backendURL}/init`, {
-    method: 'POST'
-}).then((response) => {
-    console.log("init response: " + response);
-//   response.text().then((data) => {
-//     if (data === "Database and table created" || data === "Database exists") {
-//       console.log("DB Connected")
-//     }
-//   });
-});
+function getDB() {
+    fetch(`${backendURL}/init`, {
+        method: 'POST'
+    }).then((response) => {
+        console.log("init response: " + response);
+    //   response.text().then((data) => {
+    //     if (data === "Database and table created" || data === "Database exists") {
+    //       console.log("DB Connected")
+    //     }
+    //   });
+    });
+}
 
 /**
  * Find all channels
  * @returns All channel IDs
  */
-const getChannels = () => fetch(`${backendURL}/init`, {
-    method: 'GET'
-}).then((response) => {
-    console.log("channels: " + response);
-});
+function getChannels() {
+    fetch(`${backendURL}/init`, {
+        method: 'GET'
+    }).then((response) => {
+        console.log("channels: " + response);
+    });
+}
 
 module.exports = { getDB, getChannels }
