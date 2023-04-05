@@ -1,0 +1,24 @@
+.topnav {
+    width: 100%;
+    overflow: auto;
+    height: 50px;
+    background: #446ccf;
+    color: white;
+    display: inline-flex;
+    justify-content: space-between;
+}
+
+.navbar-button {
+    background-color: #1c87c9;
+    border: none;
+    color: white;
+    padding: 20px 34px;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    display: flex;
+    font-size: 20px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
