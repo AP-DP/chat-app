@@ -95,31 +95,22 @@ function createUserTables(connection) {
  * @param {String} password 
  */
 function addUser(email, password) {
-    let getUID = new Promise((resolve, reject) => {
-        dbConnection.query(`SELECT UUID()`),
-        (err, results) => {
-            if (err) {
-                console.log("Failed to generate UUID")
-            }
-            // Else use uuid
-            results.json().then((uid) => {
-                // Record id
-                dbConnection.query(`INSERT INTO ${USER_IDS} (uid) VALUES (UUID())`);
-                resolve(uid)
-            });
-        }
-    })
-    getUID.then((uid) => {
-        // Record email
-        dbConnection.query(`INSERT INTO ${USER_EMAILS} (id, email) VALUES
-        ('${uid}', '${email}')`);
-        // Record password
+    // Generate UUID
+    let uid = crypto.randomUUID();
+    // Insert new user data
+    dbConnection.query(`INSERT INTO ${USER_IDS} (uid) VALUES ('${uid}')`);
+    // Record email
+    dbConnection.query(`INSERT INTO ${USER_EMAILS} (id, email) VALUES
+    ('${uid}', '${email}')`);
+    // Record password
+    encodePassword(password).then((encryptedData) => {
+        console.log(encryptedData);
         dbConnection.query(`INSERT INTO ${USER_PWDS} (id, pwd) VALUES
-        ('${uid}', '${encodePassword(password)}')`);
-        // Send uid
-        return JSON.stringify({
-            userID: uid
-        })
+        ('${uid}', '${encryptedData}')`)
+    });
+    // Send uid
+    return JSON.stringify({
+        userID: uid
     })
 }
 
@@ -129,14 +120,18 @@ function addUser(email, password) {
  * @param {String} password 
  */
 function verifyUser(email, password) {
-    let id = getUserID(email);
-    if (id != -1) {
-        let recordedPwd = getPassword(id);
-        if (recordedPwd != -1) {
-            return (recordedPwd == password);
+    getUserID(email).then((id) => {
+        // Check for empty result
+        if (id.length > 0) {
+            getPassword(id).then((recordedPwd) => {
+                // Check for empty result
+                if (recordedPwd != null) {
+                    return(recordedPwd == password);
+                }
+            })
         }
-    }
-    return false;
+        return false;
+    });
 }
 
 /**
@@ -144,14 +139,17 @@ function verifyUser(email, password) {
  * @param {String} email 
  */
 function getUserID(email) {
-    dbConnection.query(`SELECT * from ${USER_EMAILS} WHERE email = ${email}`, (err, results) => {
-        if (err) {
-            console.log("Cannot find id for email: " + email);
-            return(-1);
-        }
-        else {
-            return(results);
-        }
+    return new Promise((resolve, reject) => {
+        dbConnection.query(`SELECT * from ${USER_EMAILS} WHERE email = "${email}"`, (err, results) => {
+            if (err) {
+                console.log("Error: unable to look for email in user_emails");
+                reject(err);
+            }
+            else {
+                // Results may be empty, or will contain 1 value
+                resolve(results);
+            }
+        });
     });
 }
 
@@ -160,8 +158,11 @@ function getUserID(email) {
  * @param {String} pwd 
  */
 function encodePassword(pwd) {
-    let encryptedData = cipher.update(pwd, "utf-8", "hex");
-    return encryptedData;
+    return new Promise((resolve, reject) => {
+        let encrypted = cipher.update(pwd, "utf-8", "hex");
+        encrypted += cipher.final('hex');
+        resolve(encrypted);
+    })
 }
 
 /**
@@ -170,17 +171,23 @@ function encodePassword(pwd) {
  */
 function getPassword(id) {
     // Retrieve
-    dbConnection.query(`SELECT * from ${USER_PWDS} WHERE id = ${id}`, (err, results) => {
-        if (err) {
-            console.log("Cannot find password for id: " + id);
-            return(-1);
-        }
-        else {
-            // Decipher
-            console.log("PWD Results: " + results);
-            let decryptedData = decipher.update(results, "hex", "utf-8");
-            return(decryptedData);
-        }
+    return new Promise((resolve, reject) => {
+        dbConnection.query(`SELECT * from ${USER_PWDS} WHERE id = "${id}"`, (err, results) => {
+            if (err) {
+                console.log("Error: unable to look for id in user_pwds");
+                reject(err);
+            }
+            else {
+                if (results.length > 0) {
+                    // Decipher
+                    let decryptedData = decipher.update(results, "hex", "utf-8");
+                    resolve(decryptedData);
+                }
+                else {
+                    resolve(null)
+                }
+            }
+        });
     });
 }
 
