@@ -27,4 +27,22 @@ function getChannels() {
     });
 }
 
+/**
+ * Add new channel
+ * @returns new channel data
+ */
+function addChannel(channelName) {
+    fetch(`${backendURL}/init`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            channel: `${channelName}`,
+        }),
+    }).then((response) => {
+        console.log("channels: " + response);
+    });
+}
+
 module.exports = { getDB, getChannels }
