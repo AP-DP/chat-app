@@ -21,6 +21,7 @@ export const ShowChannels = ({channels, setChannelSelection}) => {
                     {channelPreview}
                 </div>
             ))}
+            <ChannelPreview channelName={""} channelLink={"/"} selectChannel={setChannelSelection}/>
         </div>
     );
 }
