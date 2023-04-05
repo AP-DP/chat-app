@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { getDB, getChannels } from './services/DataService';
 import { verifyUser, addUser } from './services/UserService';
 
+import { Login } from './Login';
 import { Dashboard } from './Dashboard';
 
 // Icons
@@ -39,9 +40,9 @@ function App() {
   // Check which channel is selected
   const [getChannelSelection, setChannelSelection] = useState("");
 
-  // if (!getUser) {
-  //   return <Login verifyUser={verifyUser} createUser={addUser} setUser={setUser}/>
-  // }
+  if (!getUser) {
+    return <Login verifyUser={verifyUser} createUser={addUser} setUser={setUser}/>
+  }
 
   return (
     <div className="App">
@@ -51,6 +52,7 @@ function App() {
             <Routes>
               <Route exact path='/' element={
               <Dashboard 
+                setUser={setUser}
                 getChannels={getChannels} 
                 getChannelSelection={getChannelSelection}
                 setChannelSelection={setChannelSelection}

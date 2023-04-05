@@ -7,10 +7,10 @@ import { Landing } from './Landing';
 import { ShowChannels } from './ShowChannels';
 import { Channel } from './Channel';
 
-export const Dashboard = ({getChannels, getChannelSelection, setChannelSelection}) => {
+export const Dashboard = ({setUser, getChannels, getChannelSelection, setChannelSelection}) => {
     return (
         <div className='dashboard'>
-            <Navbar/>
+            <Navbar setUser={setUser} setChannelSelection={setChannelSelection}/>
             {getChannelSelection === "" 
             ? 
             <>
@@ -20,8 +20,6 @@ export const Dashboard = ({getChannels, getChannelSelection, setChannelSelection
             :
             <Channel name={getChannelSelection}/>
             }
-            
-            {/* <Route path="/channelTest" element={<Channel name={"test"}/>} /> */}
         </div>
     );
 }
