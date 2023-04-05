@@ -1,8 +1,8 @@
 const mysql = require('mysql');
 
-const { createUserTables } = require('./dbUsers')
-const { createChannelTable, addChannel, getChannelID } = require('./dbChannels')
-const { addMessage } = require('./dbMessages')
+const { setConnectionForUsers, createUserTables } = require('./dbUsers')
+const { setConnectionForChannels, createChannelTable } = require('./dbChannels')
+const { setConnectionForMessages } = require('./dbMessages')
 
 let dbConnection;
 let dbName = "channelchatdb";
@@ -22,24 +22,16 @@ function getConnection() {
             password: 'test'
         });
         console.log("Made connection: " + dbConnection);
+        setConnectionForUsers(dbConnection);
+        setConnectionForChannels(dbConnection);
+        setConnectionForMessages(dbConnection);
         return getDB();
     }
     else {
+        setConnectionForUsers(dbConnection);
+        setConnectionForChannels(dbConnection);
+        setConnectionForMessages(dbConnection);
         return dbConnection;
-    }
-}
-
-/**
- * For other db files: check if connection exists
- * and if not, grab connnection from this page.
- * @param {Object} connection 
- */
-function checkConnection(connection) {
-    if (!connection) {
-        getConnection();
-    }
-    else {
-        return connection;
     }
 }
 
@@ -111,4 +103,4 @@ function addTables() {
     });  
 }
 
-module.exports = { getConnection, checkConnection }
+module.exports = { getConnection }

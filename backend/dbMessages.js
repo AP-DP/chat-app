@@ -1,10 +1,17 @@
-const { checkConnection } = require('./dbInit')
-
 // Connection
 let dbConnection;
 
 // Table names
 const MESSAGE_IDS = "message_ids";
+
+/**
+ * Get mysql connection
+ * @param {Object} connection 
+ */
+function setConnection(connection) {
+    console.log("Setting connection for messages");
+    dbConnection = connection
+}
 
 /**
  * Initialisation a message table for new channel
@@ -38,7 +45,6 @@ function createMessageTable(connection, channelID) {
  * @param {String} timestamp: time the message was submitted by the user
  */
 function addMessage(channel, root, parent, author, timestamp) {
-    dbConnection = checkConnection(dbConnection);
     dbConnection.query(`INSERT INTO $${MESSAGE_IDS}_${channel} (root, parent, author, timestamp) VALUES
     ('${root}', '${parent}', '${author}', '${timestamp}')`);
 }
@@ -84,4 +90,4 @@ function deleteMessageTable(channelID) {
     dbConnection.query(`DROP TABLE ${MESSAGE_IDS}_${channelID}`);
 }
 
-module.exports = { createMessageTable, addMessage, findInMessages, findByAuthor, findAllReplies, deleteMessage, deleteMessageTable }
+module.exports = { setConnectionForMessages: setConnection, createMessageTable, addMessage, findInMessages, findByAuthor, findAllReplies, deleteMessage, deleteMessageTable }
