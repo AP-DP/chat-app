@@ -1,14 +1,14 @@
 'use strict';
 
-// Load packages
+// Load packages and set up server
 const express = require('express')
-const bodyParser = require('body-parser')
-const cors = require('cors');
-
-const jsonParser = bodyParser.json()
-
-// Server
 const app = express();
+
+const bodyParser = require("body-parser");
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+const cors = require('cors');
 app.use(cors({
     origin: 'http://localhost:3000',
     methods: ['GET', 'POST', 'PATCH', 'DELETE'],
@@ -23,6 +23,7 @@ const HOST = '0.0.0.0';
 // Database variables
 const { getConnection } = require('./dbInit')
 const { addUser, verifyUser, getUserID, getUserData } = require('./dbUsers')
+const { addChannel, getChannels } = require('./dbChannels')
 
 // Set up connection
 let dbConnection = getConnection();
@@ -39,54 +40,51 @@ app.route('/init')
     })
 
 /**
- * post: insert new data into initial table
+ * post: insert new user or modify
  */
-app.route('/addPost')
-    .post(jsonParser, (req, res, next) => {
+app.route('/addUser')
+    .post((req, res, next) => {
         // Extract post components
-        let topic = req.body.topic;
-        let data = req.body.data;
+        let email = req.body.email;
+        let pwd = req.body.pwd;
         // Insert into table
-        dbConnection.query(`INSERT INTO posts (topic, data) VALUES
-        ('${topic}', '${data}')`);
-
-        res.send("Posted");
+        let userID = addUser(email, pwd);
+        res.send(userID);
     })
     .patch((req, res, next) => {
-        // Space to update existing posts
+        // Space to update existing users
+    })
+    .delete((req, res, next) => {
+        // Space to delete existing users
     })
 
 /**
- * get: retrieve all posts from table
- * patch: retrieve newest posts
+ * post: check if user exists in database
+ * Note: Could integrate this into addUser above by passing verification = true/false in req
  */
-app.route('/getPosts')
-    .get((req, res, next) => {
-        dbConnection.query(`SELECT * from posts`, (err, results) => {
-            if (err) {
-                console.log("Cannot retrieve posts");
-                console.log(err);
-                res.send(err);
-            }
-            else {
-                res.send(results);
-            }
-        });
+app.route('/checkUser')
+    .post((req, res, next) => {
+        // Extract post components
+        let email = req.body.email;
+        let pwd = req.body.pwd;
+        res.send(verifyUser(email, pwd));
     })
-    .patch(jsonParser, (req, res, next) => {
-        // Extract search parameters
-        let latestPostID = req.body.latest;
-        // Get new posts
-        dbConnection.query(`SELECT * from posts WHERE id > ${latestPostID}`, (err, results) => {
-            if (err) {
-                console.log("Cannot retrieve posts");
-                console.log(err);
-                res.send(err);
-            }
-            else {
-                res.send(results);
-            }
-        });
+
+/**
+ * get: retrieve all channels
+ */
+app.route('/getChannels')
+    .get((req, res, next) => {
+        res.send(getChannels());
+    })
+
+/**
+ * post: create new channel
+ */
+app.route('/postChannel')
+    .post((req, res, next) => {
+        let channelName = req.body.channel;
+        res.send(addChannel())
     })
 
 app.listen(PORT, HOST);
