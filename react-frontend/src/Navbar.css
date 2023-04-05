@@ -22,3 +22,8 @@
     margin: 4px 2px;
     cursor: pointer;
 }
+
+.navbar-button:hover {
+    background: white;
+    color: black;
+}
