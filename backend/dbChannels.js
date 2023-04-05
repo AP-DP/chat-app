@@ -69,7 +69,7 @@ function getChannels() {
  * @param {String} channelName 
  */
 function getChannelID(channelName) {
-    dbConnection.query(`SELECT * from ${CHANNEL_IDS} WHERE name = ${channelName}`, (err, results) => {
+    dbConnection.query(`SELECT * from ${CHANNEL_IDS} WHERE name = '${channelName}'`, (err, results) => {
         if (err) {
             console.log("Cannot find id for channel: " + channelName);
             return(-1);
@@ -88,7 +88,7 @@ function deleteChannelByID(channelID) {
     // Delete content
     deleteChannelMessages(channelID)
     // Delete channel
-    `DELETE FROM ${CHANNEL_IDS} WHERE id=${channelID};`
+    `DELETE FROM ${CHANNEL_IDS} WHERE id='${channelID}';`
 }
 
 /**
