@@ -25,6 +25,7 @@ function createMessageTable(connection, channelID) {
         root int unsigned NOT NULL,
         parent int unsigned NOT NULL,
         author varchar(254) NOT NULL,
+        content varchar(1000) NOT NULL,
         timestamp varchar(254) NOT NULL,
         PRIMARY KEY (id))`, 
         (err, results) => {
