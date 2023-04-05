@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import './ChannelPreview.css';
 
-export const ChannelPreview = ({channelName, channelLink}) => {
+export const ChannelPreview = ({channelName, channelLink, selectChannel}) => {
     // Adjust content
     let icon;
     if (channelName === "") {
@@ -15,7 +15,7 @@ export const ChannelPreview = ({channelName, channelLink}) => {
     return (
         <div className='preview-container'>
             <div>
-                <button className='channel-button'><FontAwesomeIcon className='channel-icon' icon={icon} /></button>
+                <button className='channel-button' onClick={() => selectChannel(channelName)}><FontAwesomeIcon className='channel-icon' icon={icon} /></button>
             </div>
             <div>
                 <label className='channel-label'>{channelName}</label>

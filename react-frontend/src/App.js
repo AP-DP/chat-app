@@ -36,6 +36,9 @@ function App() {
   // Gather channels for display
   const [getChannels, setChannels] = useState([{name: "Test 1", link: "/"}, {name: "Test 2", link: "/"}]);
 
+  // Check which channel is selected
+  const [getChannelSelection, setChannelSelection] = useState("");
+
   // if (!getUser) {
   //   return <Login verifyUser={verifyUser} createUser={addUser} setUser={setUser}/>
   // }
@@ -46,7 +49,13 @@ function App() {
         <div className='primary-container'>
           <Router>
             <Routes>
-              <Route exact path='/' element={<Dashboard getChannels={getChannels}/>} />
+              <Route exact path='/' element={
+              <Dashboard 
+                getChannels={getChannels} 
+                getChannelSelection={getChannelSelection}
+                setChannelSelection={setChannelSelection}
+              />} 
+              />
             </Routes>
           </Router>
         </div>
