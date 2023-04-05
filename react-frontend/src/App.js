@@ -40,6 +40,9 @@ function App() {
   // Check which channel is selected
   const [getChannelSelection, setChannelSelection] = useState("");
 
+  // Get messages for that channel
+  const [getMessages, setMessages] = useState([]);
+
   if (!getUser) {
     return <Login verifyUser={verifyUser} createUser={addUser} setUser={setUser}/>
   }
@@ -56,6 +59,7 @@ function App() {
                 getChannels={getChannels} 
                 getChannelSelection={getChannelSelection}
                 setChannelSelection={setChannelSelection}
+                getMessages={getMessages}
               />} 
               />
             </Routes>
