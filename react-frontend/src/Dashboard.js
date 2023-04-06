@@ -7,7 +7,7 @@ import { Landing } from './Landing';
 import { ShowChannels } from './ShowChannels';
 import { Channel } from './Channel';
 
-export const Dashboard = ({setUser, getChannels, getChannelSelection, setChannelSelection, getMessages}) => {
+export const Dashboard = ({setUser, getChannels, getChannelSelection, setChannelSelection, getMessages, addChannel}) => {
     return (
         <div className='dashboard'>
             <Navbar setUser={setUser} setChannelSelection={setChannelSelection}/>
@@ -15,7 +15,7 @@ export const Dashboard = ({setUser, getChannels, getChannelSelection, setChannel
             ? 
             <>
             <Landing/>
-            <ShowChannels channels={getChannels} setChannelSelection={setChannelSelection}/>
+            <ShowChannels channels={getChannels} setChannelSelection={setChannelSelection} addChannel={addChannel}/>
             </>
             :
             <Channel name={getChannelSelection} posts={getMessages}/>

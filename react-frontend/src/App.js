@@ -3,7 +3,7 @@ import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
-import { getDB, getChannels } from './services/DataService';
+import { getDB, getChannels, addChannel } from './services/DataService';
 import { verifyUser, addUser } from './services/UserService';
 
 import { Login } from './Login';
@@ -60,6 +60,7 @@ function App() {
                 getChannelSelection={getChannelSelection}
                 setChannelSelection={setChannelSelection}
                 getMessages={getMessages}
+                addChannel={addChannel}
               />} 
               />
             </Routes>

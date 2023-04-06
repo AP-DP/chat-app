@@ -3,7 +3,7 @@ import { ChannelPreview } from './ChannelPreview';
 
 import './ShowChannels.css';
 
-export const ShowChannels = ({channels, setChannelSelection}) => {
+export const ShowChannels = ({channels, setChannelSelection, addChannel}) => {
     let channelList = [];
     for (let i=0; i< channels.length; i++) {
         let channelData = channels[i];
@@ -21,7 +21,7 @@ export const ShowChannels = ({channels, setChannelSelection}) => {
                     {channelPreview}
                 </div>
             ))}
-            <ChannelPreview channelName={""} channelLink={"/"} selectChannel={setChannelSelection}/>
+            <ChannelPreview channelName={""} createChannel={addChannel} selectChannel={setChannelSelection}/>
         </div>
     );
 }

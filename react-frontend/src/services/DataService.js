@@ -45,4 +45,4 @@ function addChannel(channelName) {
     });
 }
 
-module.exports = { getDB, getChannels }
+module.exports = { getDB, getChannels, addChannel }
