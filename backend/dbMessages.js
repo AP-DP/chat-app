@@ -46,8 +46,24 @@ function createMessageTable(connection, channelID) {
  * @param {String} timestamp: time the message was submitted by the user
  */
 function addMessage(channel, root, parent, author, timestamp) {
-    dbConnection.query(`INSERT INTO $${MESSAGE_IDS}_${channel} (root, parent, author, timestamp) VALUES
+    dbConnection.query(`INSERT INTO ${MESSAGE_IDS}_${channel} (root, parent, author, timestamp) VALUES
     ('${root}', '${parent}', '${author}', '${timestamp}')`);
+}
+
+/**
+ * Get all messages for a channel
+ * @param {String} channel: channel that messages belongs to
+ */
+function getMessages(channel) {
+    dbConnection.query(`SELECT * from ${MESSAGE_IDS}_${channel}`, (err, results) => {
+        if (err) {
+            console.log("Cannot get messages for channel " + channel);
+            return(err);
+        }
+        else {
+            return(results);
+        }
+    });
 }
 
 /**
@@ -91,4 +107,4 @@ function deleteMessageTable(channelID) {
     dbConnection.query(`DROP TABLE ${MESSAGE_IDS}_${channelID}`);
 }
 
-module.exports = { setConnectionForMessages: setConnection, createMessageTable, addMessage, findInMessages, findByAuthor, findAllReplies, deleteMessage, deleteMessageTable }
+module.exports = { setConnectionForMessages: setConnection, createMessageTable, addMessage, getMessages, findInMessages, findByAuthor, findAllReplies, deleteMessage, deleteMessageTable }

@@ -45,4 +45,38 @@ function addChannel(channelName) {
     });
 }
 
-module.exports = { getDB, getChannels, addChannel }
+/**
+ * Get all messages for a channel
+ * @param {String} channelName 
+ */
+function getMessages(channelName) {
+    fetch(`${backendURL}/getMessages/${channelName}`, {
+        method: 'GET'
+    }).then((response) => {
+        console.log("channel messages: " + response);
+    });
+}
+
+/**
+ * Add new message to a channel
+ * @returns new message data
+ */
+function addMessage(channelName, root, parent, author, timestamp) {
+    fetch(`${backendURL}/addMessage`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            channel: `${channelName}`,
+            root: `${root}`, 
+            parent: `${parent}`, 
+            author: `${author}`, 
+            timestamp: `${timestamp}`
+        }),
+    }).then((response) => {
+        console.log("message: " + response);
+    });
+}
+
+module.exports = { getDB, getChannels, addChannel, getMessages, addMessage }

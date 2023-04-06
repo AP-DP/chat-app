@@ -23,7 +23,8 @@ const HOST = '0.0.0.0';
 // Database variables
 const { getConnection } = require('./dbInit')
 const { addUser, verifyUser, getUserID, getUserData } = require('./dbUsers')
-const { addChannel, getChannels } = require('./dbChannels')
+const { addChannel, getChannels, getChannelID } = require('./dbChannels')
+const { addMessage, getMessages } = require('./dbMessages')
 
 // Set up connection
 let dbConnection = getConnection();
@@ -84,7 +85,31 @@ app.route('/getChannels')
 app.route('/postChannel')
     .post((req, res, next) => {
         let channelName = req.body.channel;
-        res.send(addChannel())
+        res.send(addChannel(channelName))
+    })
+
+/**
+ * get: retrieve all messages for a particular channel
+ */
+app.route('/getMessages/:channelName')
+    .get((req, res, next) => {
+        let channelName = req.params.channelName;
+        let channelID = getChannelID(channelName);
+        res.send(getMessages(channelID))
+    })
+
+/**
+ * post: create new message for specific channel
+ */
+app.route('/addMessage')
+    .post((req, res, next) => {
+        let channelName = req.body.channel;
+        let channelID = getChannelID(channelName);
+        let root = req.body.root;
+        let parent = req.body.parent;
+        let author = req.body.author;
+        let timestamp = req.body.timestamp;
+        res.send(addMessage(channelID, root, parent, author, timestamp));
     })
 
 app.listen(PORT, HOST);
