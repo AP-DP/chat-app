@@ -82,7 +82,7 @@ app.route('/getChannels')
 /**
  * post: create new channel
  */
-app.route('/postChannel')
+app.route('/addChannel')
     .post((req, res, next) => {
         let channelName = req.body.channel;
         res.send(addChannel(channelName))
@@ -94,8 +94,10 @@ app.route('/postChannel')
 app.route('/getMessages/:channelName')
     .get((req, res, next) => {
         let channelName = req.params.channelName;
-        let channelID = getChannelID(channelName);
-        res.send(getMessages(channelID))
+        getChannelID(channelName).then((channelID) => {
+            console.log("Checking id: " + channelID);
+            res.send(getMessages(channelID))
+        });
     })
 
 /**
@@ -104,12 +106,14 @@ app.route('/getMessages/:channelName')
 app.route('/addMessage')
     .post((req, res, next) => {
         let channelName = req.body.channel;
-        let channelID = getChannelID(channelName);
         let root = req.body.root;
         let parent = req.body.parent;
         let author = req.body.author;
+        let content = req.body.content;
         let timestamp = req.body.timestamp;
-        res.send(addMessage(channelID, root, parent, author, timestamp));
+        getChannelID(channelName).then((channelID) => {
+            res.send(addMessage(channelID, root, parent, author, content, timestamp));
+        })
     })
 
 app.listen(PORT, HOST);
