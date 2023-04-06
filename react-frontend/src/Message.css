@@ -1,0 +1,30 @@
+.message-container h1 {
+    font-size: 30px;
+}
+
+.message-container p {
+    font-size: 15px;
+}
+
+.message-button {
+    width: 40px;
+    height: 40px;
+    background: #446ccf;
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10%;
+    border: none;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.message-button:hover {
+    background: white;
+    color: black;
+}
+
+.message-icon {
+    font-size: 20px;
+}
