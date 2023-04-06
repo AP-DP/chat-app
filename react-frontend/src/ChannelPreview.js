@@ -1,10 +1,15 @@
 import React from 'react';
+import {useState} from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import './ChannelPreview.css';
 
-export const ChannelPreview = ({channelName, channelLink, selectChannel}) => {
+export const ChannelPreview = ({channelName, createChannel, selectChannel}) => {
     let createNewChannel = channelName === "";
+
+    // Track new channel name
+    const [getName, setName] = useState('');
+
     // Adjust content
     let icon;
     if (createNewChannel) {
@@ -17,6 +22,7 @@ export const ChannelPreview = ({channelName, channelLink, selectChannel}) => {
     const handleClick = () => {
         if (createNewChannel) {
             console.log("Creating new");
+            createChannel(getName);
         }
         else {
             selectChannel(channelName);
@@ -28,7 +34,14 @@ export const ChannelPreview = ({channelName, channelLink, selectChannel}) => {
                 <button className='channel-button' onClick={handleClick}><FontAwesomeIcon className='channel-icon' icon={icon} /></button>
             </div>
             <div>
-                <label className='channel-label'>{createNewChannel ? "New Channel" : channelName}</label>
+                {
+                    createNewChannel 
+                    ? 
+                    <input className='channel-label' type="text" maxLength="80" placeholder="New Channel" value={getName} 
+                    onChange={e => setName(e.target.value)} />
+                    : 
+                    <label className='channel-label'>{channelName}</label>
+                }
             </div>
         </div>
     );
