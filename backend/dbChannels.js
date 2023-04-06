@@ -43,10 +43,17 @@ function addChannel(channelName) {
 
     // Insert
     dbConnection.query(`INSERT INTO ${CHANNEL_IDS} (name) VALUES
-    ('${channelName}')`);
-    let latestID = dbConnection.query(`SELECT LAST_INSERT_ID()`);
-    // Create message table for new channel
-    createMessageTable(dbConnection, latestID);
+    ('${channelName}')`, (err, results) => {
+        if (err) {
+            console.log("Cannot insert new channel");
+            console.log(err);
+            return(-1);
+        }
+        else {
+            let latestID = results.insertId;
+            createMessageTable(dbConnection, latestID);
+        }
+    });
 }
 
 /**
@@ -69,15 +76,19 @@ function getChannels() {
  * @param {String} channelName 
  */
 function getChannelID(channelName) {
-    dbConnection.query(`SELECT * from ${CHANNEL_IDS} WHERE name = '${channelName}'`, (err, results) => {
-        if (err) {
-            console.log("Cannot find id for channel: " + channelName);
-            return(-1);
-        }
-        else {
-            return(results);
-        }
-    });
+    return new Promise((resolve, reject) => {
+        dbConnection.query(`SELECT * from ${CHANNEL_IDS} WHERE name = '${channelName}'`, (err, results) => {
+            if (err) {
+                console.log("Cannot find id for channel: " + channelName);
+                reject(-1);
+            }
+            else {
+                // There should only be one result
+                let channelData = results[0];
+                resolve(channelData.id);
+            }
+        });
+    })
 }
 
 /**
