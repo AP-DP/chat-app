@@ -6,7 +6,7 @@ import './Message.css';
 import './MessageInput'
 import { MessageInput } from './MessageInput';
 
-export const Message = ({author, message, timestamp}) => {
+export const Message = ({channel, id, root, parent, author, message, timestamp, addMessage}) => {
 
     const [isReplying, setReplying] = useState(false);
 
@@ -21,7 +21,7 @@ export const Message = ({author, message, timestamp}) => {
             <p>{message}</p>
             <p>{timestamp}</p>
             <button className='message-button reply-button' onClick={handleReply}><FontAwesomeIcon className='message-icon' icon="fa-reply" /></button>
-            { isReplying && <MessageInput/> }
+            { isReplying && <MessageInput addMessage={addMessage} source={id} channel={channel}/> }
         </div>
     );
 }

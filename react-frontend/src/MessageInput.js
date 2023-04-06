@@ -3,7 +3,7 @@ import {useState} from 'react';
 
 import './Message.css';
 
-export const MessageInput = ({addMessage}) => {
+export const MessageInput = ({channel, source, addMessage}) => {
 
     const [getMessage, setMessage] = useState('');
 
@@ -21,7 +21,17 @@ export const MessageInput = ({addMessage}) => {
                 }
                 else {
                     // Send data to be added to db
-                    addMessage(message)
+                    let isRoot = 0;
+                    if (source === 0) {
+                        // Messages generated here will be root messages
+                        isRoot = 1;
+                    }
+                    let userName = "TestUser"
+                    // Get date and time
+                    let timestamp = new Date();
+                    let reformattedDate = timestamp.toISOString();
+                    let shortenedDate = reformattedDate.slice(0, 10)+ " " + reformattedDate.slice(11, 16)
+                    addMessage(channel, isRoot, source, userName, message, shortenedDate)
                     // Reset input fields
                     setMessage("")
                 }
