@@ -32,7 +32,7 @@ function getChannels() {
  * @returns new channel data
  */
 function addChannel(channelName) {
-    fetch(`${backendURL}/init`, {
+    fetch(`${backendURL}/addChannel`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -61,7 +61,7 @@ function getMessages(channelName) {
  * Add new message to a channel
  * @returns new message data
  */
-function addMessage(channelName, root, parent, author, timestamp) {
+function addMessage(channelName, root, parent, author, content, timestamp) {
     fetch(`${backendURL}/addMessage`, {
         method: 'POST',
         headers: {
@@ -72,6 +72,7 @@ function addMessage(channelName, root, parent, author, timestamp) {
             root: `${root}`, 
             parent: `${parent}`, 
             author: `${author}`, 
+            content: `${content}`,
             timestamp: `${timestamp}`
         }),
     }).then((response) => {
