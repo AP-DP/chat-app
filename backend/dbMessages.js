@@ -39,25 +39,36 @@ function createMessageTable(connection, channelID) {
 
 /**
  * 
- * @param {String} channel: channel the message belongs to
- * @param {String} root: topmost message to which this may be a reply, "" if this is a root
- * @param {String} parent: none if root, otherwise root or a message in the replies to the root ("messageID")
+ * @param {String} channelID: channel the message belongs to
+ * @param {String} root: is this a root, 0 for false, 1 for true
+ * @param {String} parent: 0 if root, otherwise id of parent
  * @param {String} author: user who create message
+ * @param {String} content: body of the message
  * @param {String} timestamp: time the message was submitted by the user
  */
-function addMessage(channel, root, parent, author, timestamp) {
-    dbConnection.query(`INSERT INTO ${MESSAGE_IDS}_${channel} (root, parent, author, timestamp) VALUES
-    ('${root}', '${parent}', '${author}', '${timestamp}')`);
+function addMessage(channelID, root, parent, author, content, timestamp) {
+    // Reformat string input
+    let isRoot = parseInt(root);
+    let parentID = parseInt(parent);
+    // Double up any single quotes
+    let robustMessage = content.replaceAll("'", "''");
+    dbConnection.query(`INSERT INTO ${MESSAGE_IDS}_${channelID} (root, parent, author, content, timestamp) VALUES
+    (${isRoot}, ${parentID}, '${author}', '${robustMessage}', '${timestamp}')`, (err, results) => {
+        if (err) {
+            console.log("Could not insert messsage into channel: " + channelID)
+            console.log(err);
+        }
+    });
 }
 
 /**
  * Get all messages for a channel
- * @param {String} channel: channel that messages belongs to
+ * @param {String} channelID: channel that messages belongs to
  */
-function getMessages(channel) {
-    dbConnection.query(`SELECT * from ${MESSAGE_IDS}_${channel}`, (err, results) => {
+function getMessages(channelID) {
+    dbConnection.query(`SELECT * from ${MESSAGE_IDS}_${channelID}`, (err, results) => {
         if (err) {
-            console.log("Cannot get messages for channel " + channel);
+            console.log("Cannot get messages for channel " + channelID);
             return(err);
         }
         else {
@@ -83,11 +94,19 @@ function findByAuthor(author) {
 }
 
 /**
- * Find all messages replying to a 0th level message
- * @param {String} root 
+ * Find all root messages
+ * @param {String} channelID 
  */
-function findAllReplies(root) {
-
+function findAllRoots(channelID) {
+    dbConnection.query(`SELECT * from ${MESSAGE_IDS}_${channelID} WHERE id = 0`, (err, results) => {
+        if (err) {
+            console.log("Cannot get root messages for channel " + channelID);
+            return(err);
+        }
+        else {
+            return(results);
+        }
+    });
 }
 
 /**
@@ -107,4 +126,4 @@ function deleteMessageTable(channelID) {
     dbConnection.query(`DROP TABLE ${MESSAGE_IDS}_${channelID}`);
 }
 
-module.exports = { setConnectionForMessages: setConnection, createMessageTable, addMessage, getMessages, findInMessages, findByAuthor, findAllReplies, deleteMessage, deleteMessageTable }
+module.exports = { setConnectionForMessages: setConnection, createMessageTable, addMessage, getMessages, findInMessages, findByAuthor, findAllRoots, deleteMessage, deleteMessageTable }
