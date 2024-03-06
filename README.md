@@ -1,7 +1,7 @@
 # Channel-Based Chat Tool
 
 ## Backend
-Database: Normalised MySQL with some encription
+Database: Normalised MySQL with some encryption
 
 REST API built using Express
 
